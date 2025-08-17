@@ -1,0 +1,19 @@
+# This is a Job-based application, not a Deployment
+# The actual job is defined in job.yaml
+# This file exists for GitHub Actions compatibility
+
+# To deploy this application, use:
+# kubectl apply -f k8s/job.yaml
+
+# For scheduled runs, use:
+# kubectl apply -f k8s/cronjob.yaml
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alethic-ism-ai-model-pricing-info
+  namespace: alethic
+data:
+  info: |
+    This application runs as a Kubernetes Job, not a Deployment.
+    Use job.yaml for one-time runs or cronjob.yaml for scheduled runs.

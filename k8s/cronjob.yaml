@@ -15,7 +15,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: ai-model-pricing-fetcher
-            image: <IMAGE>
+            image: krasaee/alethic-ism-ai-model-pricing:latest
             imagePullPolicy: Always
             env:
               - name: DB_HOST
