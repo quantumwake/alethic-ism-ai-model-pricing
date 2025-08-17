@@ -1,12 +1,13 @@
 # Alethic ISM AI Model Pricing Fetcher
 
-A Kubernetes Job that fetches and stores AI model pricing information from Anthropic and OpenAI into a PostgreSQL database.
+A Kubernetes Job that fetches and stores AI model pricing information from Anthropic, OpenAI, and Google Gemini into a PostgreSQL database.
 
 ## Overview
 
 This service fetches the latest pricing information for AI models from:
 - **Anthropic**: Claude models (Opus, Sonnet, Haiku, Instant)
 - **OpenAI**: GPT models (GPT-4, GPT-4o, GPT-3.5, o1 models)
+- **Google**: Gemini models (Gemini 1.5 Pro, Flash, Gemini 1.0 Pro, Gemini 2.0)
 
 The pricing data includes:
 - Input token pricing (per 1K tokens)
@@ -125,10 +126,11 @@ The GitHub Actions workflow automatically:
 The pricing data is currently hardcoded based on publicly available pricing information:
 - [Anthropic Pricing](https://www.anthropic.com/pricing)
 - [OpenAI Pricing](https://openai.com/api/pricing/)
+- [Google Gemini Pricing](https://ai.google.dev/pricing)
 
 Future enhancements could include:
 - Fetching pricing from official APIs when available
-- Adding more providers (Google, Cohere, etc.)
+- Adding more providers (Cohere, Mistral, etc.)
 - Historical pricing tracking
 - Price change notifications
 

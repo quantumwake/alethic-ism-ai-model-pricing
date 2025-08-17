@@ -27,9 +27,15 @@ class PricingFetcher:
         }
         
     def get_anthropic_pricing(self) -> List[Dict[str, Any]]:
-        """Fetch Anthropic pricing data"""
+        """Fetch Anthropic pricing data
+        
+        Note: Anthropic doesn't provide a public API for pricing data.
+        These values are based on https://www.anthropic.com/pricing
+        and need to be manually updated when pricing changes.
+        """
         pricing_data = []
         
+        # Pricing as of August 2025
         anthropic_models = {
             'claude-3-5-sonnet-20241022': {
                 'input_price_per_1k': 0.003,
@@ -96,9 +102,15 @@ class PricingFetcher:
         return pricing_data
     
     def get_openai_pricing(self) -> List[Dict[str, Any]]:
-        """Fetch OpenAI pricing data"""
+        """Fetch OpenAI pricing data
+        
+        Note: OpenAI doesn't provide a public API for pricing data.
+        These values are based on https://openai.com/api/pricing/
+        and need to be manually updated when pricing changes.
+        """
         pricing_data = []
         
+        # Pricing as of August 2025
         openai_models = {
             'gpt-4o': {
                 'input_price_per_1k': 0.0025,
@@ -266,6 +278,90 @@ class PricingFetcher:
         logger.info(f"Fetched {len(pricing_data)} OpenAI models")
         return pricing_data
     
+    def get_gemini_pricing(self) -> List[Dict[str, Any]]:
+        """Fetch Google Gemini pricing data
+        
+        Note: Google doesn't provide a public API for pricing data.
+        These values are based on https://ai.google.dev/pricing
+        and need to be manually updated when pricing changes.
+        
+        TODO: Consider implementing web scraping or using an unofficial API
+        if one becomes available.
+        """
+        pricing_data = []
+        
+        # Pricing as of August 2025 - check https://ai.google.dev/pricing for updates
+        gemini_models = {
+            'gemini-1.5-pro': {
+                'input_price_per_1k': 0.00125,  # $1.25 per 1M tokens = $0.00125 per 1K
+                'output_price_per_1k': 0.005,   # $5.00 per 1M tokens = $0.005 per 1K
+                'context_window': 2097152,  # 2M context window
+                'max_output': 8192
+            },
+            'gemini-1.5-pro-002': {
+                'input_price_per_1k': 0.00125,
+                'output_price_per_1k': 0.005,
+                'context_window': 2097152,
+                'max_output': 8192
+            },
+            'gemini-1.5-flash': {
+                'input_price_per_1k': 0.000075,  # $0.075 per 1M tokens = $0.000075 per 1K
+                'output_price_per_1k': 0.0003,   # $0.30 per 1M tokens = $0.0003 per 1K
+                'context_window': 1048576,  # 1M context window
+                'max_output': 8192
+            },
+            'gemini-1.5-flash-002': {
+                'input_price_per_1k': 0.000075,
+                'output_price_per_1k': 0.0003,
+                'context_window': 1048576,
+                'max_output': 8192
+            },
+            'gemini-1.5-flash-8b': {
+                'input_price_per_1k': 0.0000375,  # $0.0375 per 1M tokens = $0.0000375 per 1K
+                'output_price_per_1k': 0.00015,   # $0.15 per 1M tokens = $0.00015 per 1K
+                'context_window': 1048576,  # 1M context window
+                'max_output': 8192
+            },
+            'gemini-1.0-pro': {
+                'input_price_per_1k': 0.0005,  # $0.50 per 1M tokens = $0.0005 per 1K
+                'output_price_per_1k': 0.0015,  # $1.50 per 1M tokens = $0.0015 per 1K
+                'context_window': 32768,  # 32K context window
+                'max_output': 8192
+            },
+            'gemini-1.0-pro-001': {
+                'input_price_per_1k': 0.0005,
+                'output_price_per_1k': 0.0015,
+                'context_window': 32768,
+                'max_output': 8192
+            },
+            'gemini-1.0-pro-002': {
+                'input_price_per_1k': 0.0005,
+                'output_price_per_1k': 0.0015,
+                'context_window': 32768,
+                'max_output': 8192
+            },
+            'gemini-2.0-flash-exp': {
+                'input_price_per_1k': 0.0,  # Free during experimental phase
+                'output_price_per_1k': 0.0,  # Free during experimental phase
+                'context_window': 1048576,  # 1M context window
+                'max_output': 8192
+            }
+        }
+        
+        for model_name, details in gemini_models.items():
+            pricing_data.append({
+                'provider': 'google',
+                'model_name': model_name,
+                'input_price_per_1k_tokens': details['input_price_per_1k'],
+                'output_price_per_1k_tokens': details['output_price_per_1k'],
+                'context_window': details['context_window'],
+                'max_output_tokens': details['max_output'],
+                'last_updated': datetime.utcnow()
+            })
+        
+        logger.info(f"Fetched {len(pricing_data)} Google Gemini models")
+        return pricing_data
+    
     def create_table(self, conn):
         """Create the pricing table if it doesn't exist"""
         with conn.cursor() as cursor:
@@ -342,6 +438,9 @@ class PricingFetcher:
             
             openai_data = self.get_openai_pricing()
             all_pricing_data.extend(openai_data)
+            
+            gemini_data = self.get_gemini_pricing()
+            all_pricing_data.extend(gemini_data)
             
             self.upsert_pricing_data(conn, all_pricing_data)
             
